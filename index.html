@@ -23,7 +23,6 @@ background:linear-gradient(135deg,#16a34a,#15803d);
 color:white;
 text-align:center;
 padding:35px 20px;
-box-shadow:0 4px 15px rgba(0,0,0,.15);
 }
 
 header h1{
@@ -58,11 +57,6 @@ border-radius:12px;
 font-size:16px;
 }
 
-input:focus{
-outline:none;
-border-color:#16a34a;
-}
-
 button{
 width:100%;
 padding:14px;
@@ -80,22 +74,20 @@ button:hover{
 background:#15803d;
 }
 
+.admin-btn{
+background:#2563eb;
+}
+
+.admin-btn:hover{
+background:#1d4ed8;
+}
+
 .card{
 margin-top:25px;
 background:white;
 padding:25px;
 border-radius:20px;
 box-shadow:0 8px 25px rgba(0,0,0,.1);
-}
-
-.card h3{
-color:#16a34a;
-margin-bottom:15px;
-}
-
-.info{
-margin:10px 0;
-font-size:16px;
 }
 
 .status{
@@ -125,13 +117,6 @@ text-align:center;
 font-size:13px;
 color:#666;
 }
-
-.notfound{
-text-align:center;
-color:red;
-font-weight:bold;
-margin-top:20px;
-}
 </style>
 </head>
 <body>
@@ -154,6 +139,12 @@ placeholder="Enter Passport Number">
 
 <button onclick="searchApplicant()">
 Check Status
+</button>
+
+<button
+class="admin-btn"
+onclick="window.location.href='login.html'">
+Admin Login
 </button>
 
 <div id="result"></div>
@@ -224,28 +215,17 @@ result.innerHTML = `
 
 <h3>${data.fullName}</h3>
 
-<div class="info">
-<b>Passport Number:</b>
-${data.passportNumber}
-</div>
+<p><b>Passport Number:</b> ${data.passportNumber}</p>
 
-<div class="info">
-<b>Application ID:</b>
-${data.applicationId}
-</div>
+<p><b>Application ID:</b> ${data.applicationId}</p>
 
-<div class="info">
-<b>Nationality:</b>
-${data.nationality}
-</div>
+<p><b>Nationality:</b> ${data.nationality}</p>
 
-<div class="info">
-<b>Status:</b><br><br>
-
+<p>
 <span class="status ${statusClass}">
 ${data.status}
 </span>
-</div>
+</p>
 
 <div class="footer">
 ✅ Officially Verified by GUZO GO System
@@ -258,22 +238,14 @@ ${data.status}
 });
 
 if(!found){
-
-result.innerHTML = `
-<div class="notfound">
-❌ No Record Found
-</div>
-`;
-
+result.innerHTML =
+"<div class='card'>❌ No Record Found</div>";
 }
 
 }catch(error){
 
-result.innerHTML = `
-<div class="notfound">
-${error.message}
-</div>
-`;
+result.innerHTML =
+"<div class='card'>"+error.message+"</div>";
 
 }
 
