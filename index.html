@@ -6,63 +6,131 @@
 <title>GUZO GO Visa Verification</title>
 
 <style>
-body{
-font-family:Arial,sans-serif;
-background:#f5f5f5;
+*{
 margin:0;
 padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
+
+body{
+background:linear-gradient(135deg,#e8f5e9,#ffffff);
+min-height:100vh;
 }
 
 header{
-background:#16a34a;
+background:linear-gradient(135deg,#16a34a,#15803d);
 color:white;
 text-align:center;
-padding:25px;
+padding:35px 20px;
+box-shadow:0 4px 15px rgba(0,0,0,.15);
+}
+
+header h1{
+font-size:36px;
+margin-bottom:8px;
 }
 
 .container{
-max-width:600px;
-margin:30px auto;
-background:white;
+max-width:650px;
+margin:35px auto;
 padding:20px;
-border-radius:15px;
-box-shadow:0 0 15px rgba(0,0,0,0.1);
+}
+
+.search-box{
+background:white;
+padding:25px;
+border-radius:20px;
+box-shadow:0 8px 25px rgba(0,0,0,.1);
+}
+
+h2{
+text-align:center;
+color:#16a34a;
+margin-bottom:20px;
 }
 
 input{
 width:100%;
-padding:12px;
-border:1px solid #ccc;
-border-radius:8px;
-box-sizing:border-box;
+padding:14px;
+border:2px solid #e5e7eb;
+border-radius:12px;
+font-size:16px;
+}
+
+input:focus{
+outline:none;
+border-color:#16a34a;
 }
 
 button{
 width:100%;
-padding:12px;
+padding:14px;
 margin-top:15px;
 background:#16a34a;
 color:white;
 border:none;
-border-radius:8px;
+border-radius:12px;
 font-size:16px;
+font-weight:bold;
 cursor:pointer;
 }
 
+button:hover{
+background:#15803d;
+}
+
 .card{
-margin-top:20px;
-padding:20px;
-background:#f9f9f9;
-border-radius:10px;
+margin-top:25px;
+background:white;
+padding:25px;
+border-radius:20px;
+box-shadow:0 8px 25px rgba(0,0,0,.1);
+}
+
+.card h3{
+color:#16a34a;
+margin-bottom:15px;
+}
+
+.info{
+margin:10px 0;
+font-size:16px;
 }
 
 .status{
 display:inline-block;
-padding:8px 15px;
-border-radius:20px;
+padding:10px 18px;
+border-radius:25px;
 color:white;
 font-weight:bold;
+margin-top:10px;
+}
+
+.approved{
 background:#16a34a;
+}
+
+.pending{
+background:#f59e0b;
+}
+
+.rejected{
+background:#dc2626;
+}
+
+.footer{
+margin-top:20px;
+text-align:center;
+font-size:13px;
+color:#666;
+}
+
+.notfound{
+text-align:center;
+color:red;
+font-weight:bold;
+margin-top:20px;
 }
 </style>
 </head>
@@ -74,6 +142,8 @@ background:#16a34a;
 </header>
 
 <div class="container">
+
+<div class="search-box">
 
 <h2>Visa Verification</h2>
 
@@ -87,6 +157,8 @@ Check Status
 </button>
 
 <div id="result"></div>
+
+</div>
 
 </div>
 
@@ -122,6 +194,8 @@ document.getElementById("result");
 
 result.innerHTML = "Searching...";
 
+try{
+
 const querySnapshot =
 await getDocs(collection(db,"applicants"));
 
@@ -135,41 +209,71 @@ if(data.passportNumber === passport){
 
 found = true;
 
+let statusClass = "pending";
+
+if(data.status === "Approved"){
+statusClass = "approved";
+}
+
+if(data.status === "Rejected"){
+statusClass = "rejected";
+}
+
 result.innerHTML = `
 <div class="card">
 
 <h3>${data.fullName}</h3>
 
-<p><b>Passport:</b>
-${data.passportNumber}</p>
+<div class="info">
+<b>Passport Number:</b>
+${data.passportNumber}
+</div>
 
-<p><b>Application ID:</b>
-${data.applicationId}</p>
+<div class="info">
+<b>Application ID:</b>
+${data.applicationId}
+</div>
 
-<p><b>Nationality:</b>
-${data.nationality}</p>
+<div class="info">
+<b>Nationality:</b>
+${data.nationality}
+</div>
 
-<p>
-<span class="status">
+<div class="info">
+<b>Status:</b><br><br>
+
+<span class="status ${statusClass}">
 ${data.status}
 </span>
-</p>
+</div>
 
-<p>
-✅ Verified by GUZO GO
-</p>
+<div class="footer">
+✅ Officially Verified by GUZO GO System
+</div>
 
 </div>
 `;
-
 }
 
 });
 
 if(!found){
 
-result.innerHTML =
-"<div class='card'>❌ No Record Found</div>";
+result.innerHTML = `
+<div class="notfound">
+❌ No Record Found
+</div>
+`;
+
+}
+
+}catch(error){
+
+result.innerHTML = `
+<div class="notfound">
+${error.message}
+</div>
+`;
 
 }
 
