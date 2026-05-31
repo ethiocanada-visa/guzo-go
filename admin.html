@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GUZO GO Admin</title>
+<title>GUZO GO ADMIN</title>
 
 <style>
 body{
@@ -48,10 +48,6 @@ font-size:16px;
 cursor:pointer;
 }
 
-button:hover{
-background:#15803d;
-}
-
 .logout{
 background:#dc2626;
 }
@@ -78,6 +74,8 @@ Logout
 <input type="text" id="applicationId" placeholder="Application ID">
 
 <input type="text" id="nationality" placeholder="Nationality">
+
+<input type="text" id="photoUrl" placeholder="Photo URL">
 
 <select id="status">
 <option>Approved</option>
@@ -121,19 +119,14 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 onAuthStateChanged(auth,(user)=>{
-
 if(!user){
 window.location.href="login.html";
 }
-
 });
 
 window.logout = async function(){
-
 await signOut(auth);
-
 window.location.href="login.html";
-
 }
 
 window.saveApplicant = async function(){
@@ -142,20 +135,12 @@ try{
 
 await addDoc(collection(db,"applicants"),{
 
-fullName:
-document.getElementById("fullName").value,
-
-passportNumber:
-document.getElementById("passportNumber").value,
-
-applicationId:
-document.getElementById("applicationId").value,
-
-nationality:
-document.getElementById("nationality").value,
-
-status:
-document.getElementById("status").value
+fullName: document.getElementById("fullName").value,
+passportNumber: document.getElementById("passportNumber").value,
+applicationId: document.getElementById("applicationId").value,
+nationality: document.getElementById("nationality").value,
+photoUrl: document.getElementById("photoUrl").value,
+status: document.getElementById("status").value
 
 });
 
@@ -165,6 +150,7 @@ document.getElementById("fullName").value="";
 document.getElementById("passportNumber").value="";
 document.getElementById("applicationId").value="";
 document.getElementById("nationality").value="";
+document.getElementById("photoUrl").value="";
 
 }catch(error){
 
@@ -177,4 +163,4 @@ alert(error.message);
 </script>
 
 </body>
-</html>
+  </html>
