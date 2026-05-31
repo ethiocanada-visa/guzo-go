@@ -88,6 +88,17 @@ background:white;
 padding:25px;
 border-radius:20px;
 box-shadow:0 8px 25px rgba(0,0,0,.1);
+text-align:center;
+}
+
+.photo{
+width:120px;
+height:120px;
+border-radius:50%;
+object-fit:cover;
+border:4px solid #16a34a;
+margin:0 auto 15px;
+display:block;
 }
 
 .status{
@@ -213,6 +224,10 @@ statusClass = "rejected";
 result.innerHTML = `
 <div class="card">
 
+${data.photoUrl ? `
+<img src="${data.photoUrl}" class="photo">
+` : ""}
+
 <h3>${data.fullName}</h3>
 
 <p><b>Passport Number:</b> ${data.passportNumber}</p>
@@ -233,6 +248,7 @@ ${data.status}
 
 </div>
 `;
+
 }
 
 });
