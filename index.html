@@ -234,9 +234,7 @@ ${data.photoUrl ? `
 
 <p><b>Application ID:</b> ${data.applicationId}</p>
 
-<p><b>Nationality:</b> ${data.nationality}</p>
-
-<p>
+<p><b>Nationality:</b> ${data.nationality}</p><p><b>Date of Birth:</b> ${data.dob || "-"}</p><p><b>Gender:</b> ${data.gender || "-"}</p><p><b>Destination Country:</b> ${data.country || "-"}</p><p><b>Visa Type:</b> ${data.visaType || "-"}</p><p><b>Issue Date:</b> ${data.issueDate || "-"}</p><p><b>Expiry Date:</b> ${data.expiryDate || "-"}</p><p>
 <span class="status ${statusClass}">
 ${data.status}
 </span>
