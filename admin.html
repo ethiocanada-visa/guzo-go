@@ -22,12 +22,20 @@ box-shadow:0 0 15px rgba(0,0,0,.1);
 h1{
 text-align:center;
 color:#16a34a;
+margin-bottom:20px;
+}
+
+label{
+display:block;
+margin-top:12px;
+font-weight:bold;
+color:#16a34a;
 }
 
 input,select{
 width:100%;
 padding:12px;
-margin-top:12px;
+margin-top:5px;
 border:1px solid #ccc;
 border-radius:8px;
 box-sizing:border-box;
@@ -55,16 +63,45 @@ background:#b91c1c;
 </style></head>
 <body><div class="container"><h1>GUZO GO ADMIN</h1><button class="logout" onclick="logout()">Logout</button>
 
-<input type="text" id="fullName" placeholder="Full Name">
-<input type="text" id="passportNumber" placeholder="Passport Number">
-<input type="text" id="applicationId" placeholder="Application ID">
-<input type="text" id="nationality" placeholder="Nationality">
-<input type="text" id="photoUrl" placeholder="Photo URL"><input type="date" id="dob"><select id="gender">
+<label>Full Name</label>
+<input type="text" id="fullName">
+
+<label>Passport Number</label>
+<input type="text" id="passportNumber">
+
+<label>Application ID</label>
+<input type="text" id="applicationId">
+
+<label>Nationality</label>
+<input type="text" id="nationality">
+
+<label>Photo URL</label>
+<input type="text" id="photoUrl">
+
+<label>Date of Birth</label>
+<input type="date" id="dob">
+
+<label>Gender</label>
+<select id="gender">
+
+<option value="">Select Gender</option>
 <option value="Male">Male</option>
 <option value="Female">Female</option>
-</select><input type="text" id="country" placeholder="Destination Country">
-<input type="text" id="visaType" placeholder="Visa Type"><input type="date" id="issueDate">
-<input type="date" id="expiryDate"><select id="status">
+</select><label>Destination Country</label>
+<input type="text" id="country">
+
+<label>Visa Type</label>
+<input type="text" id="visaType">
+
+<label>Issue Date</label>
+<input type="date" id="issueDate">
+
+<label>Expiry Date</label>
+<input type="date" id="expiryDate">
+
+<label>Status</label>
+<select id="status">
+
 <option>Approved</option>
 <option>Pending</option>
 <option>Rejected</option>
@@ -85,6 +122,7 @@ getAuth,
 onAuthStateChanged,
 signOut
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+
 const firebaseConfig = {
 apiKey: "AIzaSyBTAsl13IVaetUhf-2TiYDxl-qWXeBl4w0",
 authDomain: "guzo-go-fc6ad.firebaseapp.com",
@@ -93,7 +131,6 @@ storageBucket: "guzo-go-fc6ad.firebasestorage.app",
 messagingSenderId: "403496798385",
 appId: "1:403496798385:web:2700fcd232230741113a90"
 };
-
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -146,4 +183,4 @@ alert(error.message);
 }
 
 </script></body>
-</html>
+  </html>
