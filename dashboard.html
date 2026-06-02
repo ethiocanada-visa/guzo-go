@@ -2,13 +2,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GUZO GO Dashboard</title><style>
+<title>GUZO GO Admin Dashboard</title><style>
 
 *{
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:Segoe UI,sans-serif;
+font-family:'Segoe UI',sans-serif;
 }
 
 body{
@@ -17,15 +17,46 @@ padding:20px;
 }
 
 .header{
-background:#16a34a;
+background:linear-gradient(135deg,#16a34a,#15803d);
 color:white;
-padding:20px;
-border-radius:15px;
+padding:25px;
+border-radius:20px;
 margin-bottom:20px;
 }
 
-.header h1{
-font-size:28px;
+.stats{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:15px;
+margin-bottom:20px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:15px;
+box-shadow:0 5px 15px rgba(0,0,0,.1);
+text-align:center;
+}
+
+.card h2{
+color:#16a34a;
+font-size:30px;
+}
+
+.search-box{
+background:white;
+padding:15px;
+border-radius:15px;
+box-shadow:0 5px 15px rgba(0,0,0,.1);
+margin-bottom:20px;
+}
+
+.search-box input{
+width:100%;
+padding:12px;
+border:1px solid #ddd;
+border-radius:10px;
 }
 
 .table-box{
@@ -45,19 +76,18 @@ th{
 background:#16a34a;
 color:white;
 padding:12px;
-text-align:left;
 }
 
 td{
 padding:12px;
 border-bottom:1px solid #eee;
+text-align:center;
 }
 
 .status{
 padding:6px 12px;
 border-radius:20px;
 color:white;
-font-size:14px;
 font-weight:bold;
 }
 
@@ -73,41 +103,78 @@ background:#f59e0b;
 background:#dc2626;
 }
 
-.refresh{
-margin-bottom:15px;
-padding:12px 18px;
-background:#2563eb;
-color:white;
+button{
 border:none;
-border-radius:10px;
+padding:8px 12px;
+margin:2px;
+border-radius:8px;
 cursor:pointer;
+color:white;
+}
+
+.approveBtn{
+background:#16a34a;
+}
+
+.rejectBtn{
+background:#dc2626;
+}
+
+.deleteBtn{
+background:#111827;
+}
+
+.refreshBtn{
+background:#2563eb;
+padding:12px 18px;
+margin-bottom:15px;
 }
 
 </style></head>
 <body><div class="header">
-<h1>🌍 GUZO GO Admin Dashboard</h1>
-<p>All Visa Applications</p>
-</div><div class="table-box"><button class="refresh" onclick="loadApplicants()">
-Refresh List
+<h1>🌍 GUZO GO Dashboard</h1>
+<p>Visa Application Management System</p>
+</div><div class="stats"><div class="card">
+<h2 id="total">0</h2>
+<p>Total Applicants</p>
+</div><div class="card">
+<h2 id="approvedCount">0</h2>
+<p>Approved</p>
+</div><div class="card">
+<h2 id="pendingCount">0</h2>
+<p>Pending</p>
+</div><div class="card">
+<h2 id="rejectedCount">0</h2>
+<p>Rejected</p>
+</div></div><div class="search-box">
+<input
+type="text"
+id="searchInput"
+placeholder="Search Passport Number..."
+onkeyup="loadApplicants()">
+</div><div class="table-box"><button class="refreshBtn" onclick="loadApplicants()">
+Refresh
 </button><table><thead>
 <tr>
 <th>Name</th>
 <th>Passport</th>
 <th>Country</th>
-<th>Visa Type</th>
+<th>Visa</th>
 <th>Status</th>
+<th>Actions</th>
 </tr>
-</thead><tbody id="tableBody">
-</tbody></table></div><script type="module">
+</thead><tbody id="tableBody"></tbody></table></div><script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
 
 import {
 getFirestore,
 collection,
-getDocs
-}
-from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+getDocs,
+doc,
+updateDoc,
+deleteDoc
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
 const firebaseConfig = {
 apiKey: "AIzaSyBTAsl13IVaetUhf-2TiYDxl-qWXeBl4w0",
@@ -123,43 +190,131 @@ const db = getFirestore(app);
 
 window.loadApplicants = async function(){
 
-const table =
-document.getElementById("tableBody");
+const table = document.getElementById("tableBody");
+const search =
+document.getElementById("searchInput").value.toLowerCase();
 
 table.innerHTML = "";
+
+let total=0;
+let approved=0;
+let pending=0;
+let rejected=0;
 
 const snapshot =
 await getDocs(collection(db,"applicants"));
 
-snapshot.forEach((doc)=>{
+snapshot.forEach((item)=>{
 
-const data = doc.data();
+const data = item.data();
 
-let statusClass = "pending";
+if(
+search &&
+!(data.passportNumber || "")
+.toLowerCase()
+.includes(search)
+){
+return;
+}
 
-if(data.status==="Approved"){
+total++;
+
+if(data.status==="Approved") approved++;
+else if(data.status==="Rejected") rejected++;
+else pending++;
+
+let statusClass="pending";
+
+if(data.status==="Approved")
 statusClass="approved";
-}
 
-if(data.status==="Rejected"){
+if(data.status==="Rejected")
 statusClass="rejected";
-}
 
 table.innerHTML += `
 <tr>
+
 <td>${data.fullName || ""}</td>
+
 <td>${data.passportNumber || ""}</td>
+
 <td>${data.country || ""}</td>
+
 <td>${data.visaType || ""}</td>
+
 <td>
 <span class="status ${statusClass}">
 ${data.status || "Pending"}
 </span>
 </td>
+
+<td>
+
+<button
+class="approveBtn"
+onclick="approveApplicant('${item.id}')">
+✅
+</button>
+
+<button
+class="rejectBtn"
+onclick="rejectApplicant('${item.id}')">
+❌
+</button>
+
+<button
+class="deleteBtn"
+onclick="deleteApplicant('${item.id}')">
+🗑
+</button>
+
+</td>
+
 </tr>
 `;
 
 });
+
+document.getElementById("total").innerText=total;
+document.getElementById("approvedCount").innerText=approved;
+document.getElementById("pendingCount").innerText=pending;
+document.getElementById("rejectedCount").innerText=rejected;
+
+}
+
+window.approveApplicant = async function(id){
+
+await updateDoc(
+doc(db,"applicants",id),
+{status:"Approved"}
+);
+
+loadApplicants();
+
+}
+
+window.rejectApplicant = async function(id){
+
+await updateDoc(
+doc(db,"applicants",id),
+{status:"Rejected"}
+);
+
+loadApplicants();
+
+}
+
+window.deleteApplicant = async function(id){
+
+if(confirm("Delete Applicant?")){
+
+await deleteDoc(
+doc(db,"applicants",id)
+);
+
+loadApplicants();
+
+}
 
 }
 
