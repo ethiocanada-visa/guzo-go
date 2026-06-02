@@ -2,55 +2,116 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GUZO GO Visa Application</title><style>
-body{
-font-family:Arial,sans-serif;
-background:#f5f5f5;
+<title>GUZO GO International Visa Application</title><style>
+*{
 margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
+
+body{
+background:
+linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.55)),
+url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1600&q=80');
+background-size:cover;
+background-position:center;
+background-attachment:fixed;
+min-height:100vh;
 padding:20px;
 }
 
 .container{
-max-width:700px;
+max-width:850px;
 margin:auto;
-background:white;
-padding:25px;
-border-radius:15px;
-box-shadow:0 0 15px rgba(0,0,0,.1);
+background:rgba(255,255,255,.96);
+backdrop-filter:blur(10px);
+padding:35px;
+border-radius:25px;
+box-shadow:0 15px 40px rgba(0,0,0,.25);
 }
 
-h1{
+.logo{
 text-align:center;
+margin-bottom:25px;
+}
+
+.logo h1{
 color:#16a34a;
+font-size:42px;
+}
+
+.logo p{
+color:#555;
+font-size:16px;
+}
+
+.section-title{
+margin:20px 0 10px;
+font-size:20px;
+font-weight:bold;
+color:#16a34a;
+border-bottom:2px solid #16a34a;
+padding-bottom:8px;
+}
+
+label{
+display:block;
+margin-top:15px;
+margin-bottom:5px;
+font-weight:600;
+color:#111827;
 }
 
 input,select{
 width:100%;
-padding:12px;
-margin-top:10px;
-margin-bottom:10px;
-border:1px solid #ccc;
-border-radius:8px;
-box-sizing:border-box;
+padding:14px;
+border:1px solid #d1d5db;
+border-radius:12px;
+font-size:15px;
+}
+
+input:focus,select:focus{
+outline:none;
+border-color:#16a34a;
+box-shadow:0 0 10px rgba(22,163,74,.25);
 }
 
 button{
 width:100%;
-padding:12px;
-background:#16a34a;
+padding:16px;
+margin-top:25px;
+background:linear-gradient(135deg,#16a34a,#15803d);
 color:white;
 border:none;
-border-radius:8px;
-font-size:16px;
+border-radius:14px;
+font-size:17px;
+font-weight:bold;
 cursor:pointer;
 }
 
-label{
+button:hover{
+opacity:.95;
+}
+
+.footer{
+text-align:center;
+margin-top:20px;
+color:#666;
+font-size:14px;
+}
+
+.success{
+margin-top:15px;
+text-align:center;
 font-weight:bold;
 color:#16a34a;
 }
 </style></head>
-<body><div class="container"><h1>🌍 GUZO GO Visa Application</h1><label>Full Name</label>
+<body><div class="container"><div class="logo">
+<h1>🌍 GUZO GO</h1>
+<p>International Visa & Travel Application Portal</p>
+</div><div class="section-title">Applicant Information</div><label>Full Name</label>
 <input type="text" id="fullName">
 
 <label>Passport Number</label>
@@ -70,18 +131,31 @@ color:#16a34a;
 
 <option value="Male">Male</option>
 <option value="Female">Female</option>
-</select><label>Destination Country</label>
+</select><label>Phone Number</label>
+<input type="text" id="phone">
+
+<label>Email Address</label>
+<input type="email" id="email">
+
+<div class="section-title">Travel Information</div><label>Destination Country</label>
 <input type="text" id="country">
 
 <label>Visa Type</label>
-<input type="text" id="visaType">
+<select id="visaType">
 
-<button onclick="submitApplication()">
+<option>Work Visa</option>
+<option>Tourist Visa</option>
+<option>Student Visa</option>
+<option>Business Visa</option>
+<option>Permanent Residence</option>
+<option>Family Visa</option>
+</select><button onclick="submitApplication()">
 Submit Application
-</button></div><script type="module">
+</button><div id="msg" class="success"></div><div class="footer">
+GUZO GO © 2026 All Rights Reserved
+</div></div><script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-
 import {
 getFirestore,
 collection,
@@ -112,14 +186,18 @@ applicationId: document.getElementById("applicationId").value,
 nationality: document.getElementById("nationality").value,
 dob: document.getElementById("dob").value,
 gender: document.getElementById("gender").value,
+phone: document.getElementById("phone").value,
+email: document.getElementById("email").value,
 country: document.getElementById("country").value,
 visaType: document.getElementById("visaType").value,
-
 status: "Pending"
 
 });
 
-alert("Application Submitted Successfully!");
+document.getElementById("msg").innerHTML =
+"✅ Application Submitted Successfully";
+
+document.querySelectorAll("input").forEach(i=>i.value="");
 
 }catch(error){
 
