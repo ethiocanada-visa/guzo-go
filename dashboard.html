@@ -12,7 +12,7 @@ font-family:'Segoe UI',sans-serif;
 }
 
 body{
-background:#f4f7fb;
+background:#f3f6fb;
 padding:20px;
 }
 
@@ -22,6 +22,16 @@ color:white;
 padding:25px;
 border-radius:20px;
 margin-bottom:20px;
+box-shadow:0 5px 20px rgba(0,0,0,.15);
+}
+
+.header h1{
+font-size:32px;
+}
+
+.header p{
+margin-top:5px;
+opacity:.9;
 }
 
 .stats{
@@ -35,20 +45,21 @@ margin-bottom:20px;
 background:white;
 padding:20px;
 border-radius:15px;
-box-shadow:0 5px 15px rgba(0,0,0,.1);
+box-shadow:0 4px 15px rgba(0,0,0,.08);
 text-align:center;
 }
 
 .card h2{
-color:#16a34a;
 font-size:30px;
+color:#16a34a;
+margin-bottom:5px;
 }
 
 .search-box{
 background:white;
 padding:15px;
 border-radius:15px;
-box-shadow:0 5px 15px rgba(0,0,0,.1);
+box-shadow:0 4px 15px rgba(0,0,0,.08);
 margin-bottom:20px;
 }
 
@@ -57,14 +68,25 @@ width:100%;
 padding:12px;
 border:1px solid #ddd;
 border-radius:10px;
+font-size:15px;
 }
 
 .table-box{
 background:white;
 padding:20px;
 border-radius:15px;
-box-shadow:0 5px 15px rgba(0,0,0,.1);
+box-shadow:0 4px 15px rgba(0,0,0,.08);
 overflow:auto;
+}
+
+.refreshBtn{
+background:#2563eb;
+color:white;
+border:none;
+padding:12px 18px;
+border-radius:10px;
+cursor:pointer;
+margin-bottom:15px;
 }
 
 table{
@@ -103,20 +125,23 @@ background:#f59e0b;
 background:#dc2626;
 }
 
-button{
+.actionBtn{
 border:none;
-padding:8px 12px;
+padding:8px 10px;
 margin:2px;
 border-radius:8px;
 cursor:pointer;
 color:white;
 }
-<button
-style="background:#f59e0b"
-onclick="editApplicant('${item.id}')">
-✏️ Edit
-</button>
-  
+
+.viewBtn{
+background:#2563eb;
+}
+
+.editBtn{
+background:#f59e0b;
+}
+
 .approveBtn{
 background:#16a34a;
 }
@@ -129,10 +154,23 @@ background:#dc2626;
 background:#111827;
 }
 
-.refreshBtn{
-background:#2563eb;
-padding:12px 18px;
-margin-bottom:15px;
+.profile{
+width:50px;
+height:50px;
+border-radius:50%;
+object-fit:cover;
+}
+
+@media(max-width:768px){
+
+.header h1{
+font-size:24px;
+}
+
+table{
+font-size:13px;
+}
+
 }
 
 </style></head>
@@ -151,27 +189,28 @@ margin-bottom:15px;
 </div><div class="card">
 <h2 id="rejectedCount">0</h2>
 <p>Rejected</p>
-</div></div><div class="search-box">
-<input
+</div></div><div class="search-box"><input
 type="text"
 id="searchInput"
 placeholder="Search Passport Number..."
 onkeyup="loadApplicants()">
-</div><div class="table-box"><button class="refreshBtn" onclick="loadApplicants()">
-Refresh
-</button><table><thead>
-<tr>
+
+</div><div class="table-box"><button
+class="refreshBtn"
+onclick="loadApplicants()">
+Refresh List
+</button>
+
+<table><thead><tr>
 <th>Photo</th>
 <th>Name</th>
 <th>Passport</th>
 <th>Country</th>
-<th>Visa</th>
+<th>Visa Type</th>
 <th>Status</th>
 <th>Actions</th>
-</tr>
-</thead><tbody id="tableBody"></tbody></table></div><script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+</tr></thead><tbody id="tableBody"></tbody></table></div><script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
 
 import {
 getFirestore,
@@ -197,18 +236,16 @@ const db = getFirestore(app);
 window.loadApplicants = async function(){
 
 const table = document.getElementById("tableBody");
-const search =
-document.getElementById("searchInput").value.toLowerCase();
+const search = document.getElementById("searchInput").value.toLowerCase();
 
 table.innerHTML = "";
 
-let total=0;
-let approved=0;
-let pending=0;
-let rejected=0;
+let total = 0;
+let approved = 0;
+let pending = 0;
+let rejected = 0;
 
-const snapshot =
-await getDocs(collection(db,"applicants"));
+const snapshot = await getDocs(collection(db,"applicants"));
 
 snapshot.forEach((item)=>{
 
@@ -225,77 +262,67 @@ return;
 
 total++;
 
-if(data.status==="Approved") approved++;
-else if(data.status==="Rejected") rejected++;
+if(data.status === "Approved") approved++;
+else if(data.status === "Rejected") rejected++;
 else pending++;
 
-let statusClass="pending";
+let statusClass = "pending";
 
-if(data.status==="Approved")
-statusClass="approved";
+if(data.status === "Approved"){
+statusClass = "approved";
+}
 
-if(data.status==="Rejected")
-statusClass="rejected";
+if(data.status === "Rejected"){
+statusClass = "rejected";
+}
 
 table.innerHTML += `
-<tr>
-<td>
+
+<tr><td>
 <img
-src="${data.photoUrl || 'https://via.placeholder.com/50'}"
-style="
-width:50px;
-height:50px;
-border-radius:50%;
-object-fit:cover;">
-</td>
-<td>${data.fullName || ""}</td>
-
-<td>${data.passportNumber || ""}</td>
-
-<td>${data.country || ""}</td>
-
-<td>${data.visaType || ""}</td>
-
-<td>
+class="profile"
+src="${data.photoUrl || 'https://via.placeholder.com/50'}">
+</td><td>${data.fullName || ""}</td><td>${data.passportNumber || ""}</td><td>${data.country || ""}</td><td>${data.visaType || ""}</td><td>
 <span class="status ${statusClass}">
 ${data.status || "Pending"}
 </span>
-</td>
-
-<td>
-
-<button
-class="approveBtn"
-onclick="approveApplicant('${item.id}')">
-<button onclick="viewApplicant('${item.id}')">
+</td><td><button
+class="actionBtn viewBtn"
+onclick="viewApplicant('${item.id}')">
 👁
 </button>
+
+<button
+class="actionBtn editBtn"
+onclick="editApplicant('${item.id}')">
+✏️
+</button>
+
+<button
+class="actionBtn approveBtn"
+onclick="approveApplicant('${item.id}')">
 ✅
 </button>
 
 <button
-class="rejectBtn"
+class="actionBtn rejectBtn"
 onclick="rejectApplicant('${item.id}')">
 ❌
 </button>
 
 <button
-class="deleteBtn"
+class="actionBtn deleteBtn"
 onclick="deleteApplicant('${item.id}')">
 🗑
 </button>
 
-</td>
+</td></tr>
+`;});
 
-</tr>
-`;
-
-});
-
-document.getElementById("total").innerText=total;
-document.getElementById("approvedCount").innerText=approved;
-document.getElementById("pendingCount").innerText=pending;
-document.getElementById("rejectedCount").innerText=rejected;
+document.getElementById("total").innerText = total;
+document.getElementById("approvedCount").innerText = approved;
+document.getElementById("pendingCount").innerText = pending;
+document.getElementById("rejectedCount").innerText = rejected;
 
 }
 
@@ -303,7 +330,9 @@ window.approveApplicant = async function(id){
 
 await updateDoc(
 doc(db,"applicants",id),
-{status:"Approved"}
+{
+status:"Approved"
+}
 );
 
 loadApplicants();
@@ -314,7 +343,9 @@ window.rejectApplicant = async function(id){
 
 await updateDoc(
 doc(db,"applicants",id),
-{status:"Rejected"}
+{
+status:"Rejected"
+}
 );
 
 loadApplicants();
@@ -334,77 +365,81 @@ loadApplicants();
 }
 
 }
+
 window.viewApplicant = async function(id){
-window.editApplicant = async function(id){
 
-const snapshot =
-await getDocs(collection(db,"applicants"));
+const snapshot = await getDocs(collection(db,"applicants"));
 
 snapshot.forEach((item)=>{
 
-if(item.id===id){
-
-const d = item.data();
-
-const fullName =
-prompt("Full Name", d.fullName || "");
-
-if(fullName===null) return;
-
-const country =
-prompt("Destination Country", d.country || "");
-
-if(country===null) return;
-
-const visaType =
-prompt("Visa Type", d.visaType || "");
-
-if(visaType===null) return;
-
-updateDoc(
-doc(db,"applicants",id),
-{
-fullName: fullName,
-country: country,
-visaType: visaType
-}
-).then(()=>{
-alert("Applicant Updated Successfully");
-loadApplicants();
-});
-
-}
-
-});
-
-  }
-const snapshot =
-await getDocs(collection(db,"applicants"));
-
-snapshot.forEach((item)=>{
-
-if(item.id===id){
+if(item.id === id){
 
 const d = item.data();
 
 alert(
-"Name: " + (d.fullName||"") + "\n\n" +
-"Passport: " + (d.passportNumber||"") + "\n\n" +
-"Nationality: " + (d.nationality||"") + "\n\n" +
-"DOB: " + (d.dob||"") + "\n\n" +
-"Gender: " + (d.gender||"") + "\n\n" +
-"Country: " + (d.country||"") + "\n\n" +
-"Visa Type: " + (d.visaType||"") + "\n\n" +
-"Phone: " + (d.phone||"") + "\n\n" +
-"Email: " + (d.email||"")
+"Full Name: " + (d.fullName || "") + "\n\n" +
+"Passport: " + (d.passportNumber || "") + "\n\n" +
+"Nationality: " + (d.nationality || "") + "\n\n" +
+"Date Of Birth: " + (d.dob || "") + "\n\n" +
+"Gender: " + (d.gender || "") + "\n\n" +
+"Country: " + (d.country || "") + "\n\n" +
+"Visa Type: " + (d.visaType || "") + "\n\n" +
+"Status: " + (d.status || "")
 );
 
 }
 
 });
 
-  }
+}
+
+window.editApplicant = async function(id){
+
+const snapshot = await getDocs(collection(db,"applicants"));
+
+snapshot.forEach((item)=>{
+
+if(item.id === id){
+
+const d = item.data();
+
+const fullName =
+prompt("Full Name", d.fullName || "");
+
+if(fullName === null) return;
+
+const country =
+prompt("Country", d.country || "");
+
+if(country === null) return;
+
+const visaType =
+prompt("Visa Type", d.visaType || "");
+
+if(visaType === null) return;
+
+updateDoc(
+doc(db,"applicants",id),
+{
+fullName,
+country,
+visaType
+}
+).then(()=>{
+
+alert("Updated Successfully");
 loadApplicants();
 
-</script></body>
-  </html>
+});
+
+}
+
+});
+
+}
+
+loadApplicants();
+
+</script>
+</body>
+</html>
