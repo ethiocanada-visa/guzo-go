@@ -111,7 +111,12 @@ border-radius:8px;
 cursor:pointer;
 color:white;
 }
-
+<button
+style="background:#f59e0b"
+onclick="editApplicant('${item.id}')">
+✏️ Edit
+</button>
+  
 .approveBtn{
 background:#16a34a;
 }
@@ -330,7 +335,49 @@ loadApplicants();
 
 }
 window.viewApplicant = async function(id){
+window.editApplicant = async function(id){
 
+const snapshot =
+await getDocs(collection(db,"applicants"));
+
+snapshot.forEach((item)=>{
+
+if(item.id===id){
+
+const d = item.data();
+
+const fullName =
+prompt("Full Name", d.fullName || "");
+
+if(fullName===null) return;
+
+const country =
+prompt("Destination Country", d.country || "");
+
+if(country===null) return;
+
+const visaType =
+prompt("Visa Type", d.visaType || "");
+
+if(visaType===null) return;
+
+updateDoc(
+doc(db,"applicants",id),
+{
+fullName: fullName,
+country: country,
+visaType: visaType
+}
+).then(()=>{
+alert("Applicant Updated Successfully");
+loadApplicants();
+});
+
+}
+
+});
+
+  }
 const snapshot =
 await getDocs(collection(db,"applicants"));
 
